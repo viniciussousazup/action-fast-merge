@@ -65,8 +65,8 @@ LABEL_NAME="FAST-MERGED"
 label_resp=$(curl -X GET -s -H "${AUTH_HEADER}" -H "${API_HEADER}" \
   "${URI}/repos/$REPO_FULLNAME/labels/$LABEL_NAME")
 
-label_resp_message= $(echo "$label_resp" | jq -r .message)
-echo $label_resp_status
+label_resp_message= $(echo "$label_resp" | jq -r .message) || ""
+echo "$label_resp_status"
 
 if ["$label_resp_message" = "Not Found"]; then
   body= "{
