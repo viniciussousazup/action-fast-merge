@@ -85,10 +85,3 @@ SUCCESS_MSG="Merged with success."
 curl -X POST -s --data-raw "{\"body\": \"$SUCCESS_MSG\" }" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
   "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/comments"
 
-# # do the revert
-# git checkout -b $HEAD_BRANCH origin/$HEAD_BRANCH
-
-# # check commit exists
-# git cat-file -t $COMMIT_TO_REVERT
-# git revert $COMMIT_TO_REVERT --no-edit
-# git push origin $HEAD_BRANCH
