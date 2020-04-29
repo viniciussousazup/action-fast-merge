@@ -23,8 +23,7 @@ echo "Checking if a PR command..."
 (jq -r ".issue.pull_request.url" "$GITHUB_EVENT_PATH") || exit 78
 
 # get the Branch Name
-#Replace \r \n
-BRANCH_NAME=$(jq -r ".comment.body" "$GITHUB_EVENT_PATH" | cut -c 13-)
+BRANCH_NAME=$(jq -r ".comment.body" "$GITHUB_EVENT_PATH" | cut -c 13- | tr -d '\n' | tr -d '\r')
 
 if [[ "$(jq -r ".action" "$GITHUB_EVENT_PATH")" != "created" ]]; then
   echo "This is not a new comment event!"
