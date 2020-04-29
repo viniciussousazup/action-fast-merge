@@ -8,7 +8,7 @@ failMerge() {
             --header 'Content-Type: application/json' \
             --header 'Authorization: Bearer $1' \
             --data-raw '{
-              \"body\": \"Deu ruim ao fazer o merge\"
+              \"body\": \"$3\"
             }'
             "
   sh -c "$COMMAND"
@@ -23,6 +23,7 @@ echo "Checking if a PR command..."
 (jq -r ".issue.pull_request.url" "$GITHUB_EVENT_PATH") || exit 78
 
 # get the Branch Name
+#Replace \r \n
 BRANCH_NAME=$(jq -r ".comment.body" "$GITHUB_EVENT_PATH" | cut -c 13-)
 
 if [[ "$(jq -r ".action" "$GITHUB_EVENT_PATH")" != "created" ]]; then
@@ -56,21 +57,29 @@ git config --global user.name "GitHub Fast Merge Action"
 set -o xtrace
 
 git fetch origin $HEAD_BRANCH
-git fetch origin $BRANCH_NAME || failMerge $GITHUB_TOKEN $PR_NUMBER
+git fetch origin $BRANCH_NAME || failMerge $GITHUB_TOKEN $PR_NUMBER "Branch Not Found."
 git checkout $BRANCH_NAME
-git pull origin $HEAD_BRANCH || failMerge $GITHUB_TOKEN $PR_NUMBER
+git pull origin $HEAD_BRANCH || failMerge $GITHUB_TOKEN $PR_NUMBER "Fail to Merge."
 
 LABEL_NAME="FAST-MERGED"
 label_resp=$(curl -X GET -s -H "${AUTH_HEADER}" -H "${API_HEADER}" \
   "${URI}/repos/$REPO_FULLNAME/labels/$LABEL_NAME")
 
-label_resp_status = $(echo "$pr_resp" | jq -r .id)
+label_resp_message= $(echo "$label_resp" | jq -r .message)
 echo $label_resp_status
 
+if ["$label_resp_message" = "Not Found"]; then
+  body= "{
+    \"name\": \"$LABEL_NAME\",
+    \"description\": \"This PR successfully used FAST-MERGE command.\",
+    \"color\": \"c0c5ce\"
+  }"
+  curl -X POST -s --data-raw "$body" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
+    "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/labels"
+fi
 
 curl -X POST -s --data-raw "{\"labels\": [\"${LABEL_NAME}\"] }" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
   "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/labels"
-
 
 # # do the revert
 # git checkout -b $HEAD_BRANCH origin/$HEAD_BRANCH

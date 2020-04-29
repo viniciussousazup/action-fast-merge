@@ -10,7 +10,7 @@ on:
     types: [created]
 
 jobs:
-  revert-commit:
+  fast-merge:
 
     runs-on: ubuntu-latest
 
