@@ -1,7 +1,5 @@
 # Usage
 
-generate changelog after release:
-
 ```yml
 
 name: "Fast Merge"
