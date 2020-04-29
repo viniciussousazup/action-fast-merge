@@ -4,7 +4,7 @@ set -e
 
 failMerge() {
 
-  COMMAND="curl --location --request POST 'https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$1/comments' \
+  COMMAND="curl --location --request POST 'https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$2/comments' \
             --header 'Content-Type: application/json' \
             --header 'Authorization: Bearer $1' \
             --data-raw '{
@@ -56,9 +56,9 @@ git config --global user.name "GitHub Fast Merge Action"
 set -o xtrace
 
 git fetch origin $HEAD_BRANCH
-git fetch origin $BRANCH_NAME || failMerge $PR_NUMBER
+git fetch origin $BRANCH_NAME || failMerge $GITHUB_TOKEN $PR_NUMBER
 git checkout $BRANCH_NAME
-git pull origin $HEAD_BRANCH || failMerge $PR_NUMBER
+git pull origin $HEAD_BRANCH || failMerge $GITHUB_TOKEN $PR_NUMBER
 
 # # do the revert
 # git checkout -b $HEAD_BRANCH origin/$HEAD_BRANCH
