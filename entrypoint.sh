@@ -60,6 +60,18 @@ git fetch origin $BRANCH_NAME || failMerge $GITHUB_TOKEN $PR_NUMBER
 git checkout $BRANCH_NAME
 git pull origin $HEAD_BRANCH || failMerge $GITHUB_TOKEN $PR_NUMBER
 
+LABEL_NAME="FAST-MERGED"
+label_resp=$(curl -X GET -s -H "${AUTH_HEADER}" -H "${API_HEADER}" \
+  "${URI}/repos/$REPO_FULLNAME/labels/$LABEL_NAME")
+
+label_resp_status = $(echo "$pr_resp" | jq -r .id)
+echo $label_resp_status
+
+
+curl -X POST -s --data-raw "{\"labels\": [\"${LABEL_NAME}\"] }" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
+  "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/labels"
+
+
 # # do the revert
 # git checkout -b $HEAD_BRANCH origin/$HEAD_BRANCH
 
