@@ -60,6 +60,7 @@ git fetch origin $HEAD_BRANCH
 git fetch origin $BRANCH_NAME || failMerge $GITHUB_TOKEN $PR_NUMBER "Branch Not Found."
 git checkout $BRANCH_NAME
 git pull origin $HEAD_BRANCH || failMerge $GITHUB_TOKEN $PR_NUMBER "Fail to Merge."
+git push
 
 LABEL_NAME="FAST-MERGED"
 label_resp=$(curl -X GET -s -H "${AUTH_HEADER}" -H "${API_HEADER}" \
@@ -80,6 +81,10 @@ fi
 
 curl -X POST -s --data-raw "{\"labels\": [\"${LABEL_NAME}\"] }" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
   "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/labels"
+
+SUCCESS_MSG="Merged with success."
+curl -X POST -s --data-raw "{\"body\": "$SUCCESS_MSG" }" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
+  "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/comments"
 
 # # do the revert
 # git checkout -b $HEAD_BRANCH origin/$HEAD_BRANCH
