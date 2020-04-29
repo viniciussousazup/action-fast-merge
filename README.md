@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Automatic Revert
+      - name: Fast Merge
         uses: viniciusCSreis/action-fast-merge@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
