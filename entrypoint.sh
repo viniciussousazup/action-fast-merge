@@ -83,7 +83,7 @@ curl -X POST -s --data-raw "{\"labels\": [\"${LABEL_NAME}\"] }" -H "${AUTH_HEADE
   "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/labels"
 
 SUCCESS_MSG="Merged with success."
-curl -X POST -s --data-raw "{\"body\": "$SUCCESS_MSG" }" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
+curl -X POST -s --data-raw "{\"body\": \"$SUCCESS_MSG\" }" -H "${AUTH_HEADER}" -H "${API_HEADER}" \
   "${URI}/repos/$REPO_FULLNAME/issues/$PR_NUMBER/comments"
 
 # # do the revert
